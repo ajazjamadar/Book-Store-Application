@@ -1,83 +1,79 @@
-BookStore Application
+# 📚 Book Store Application
 
-⚠️ Developed as part of Week 6 Spring Boot training.
-This project demonstrates REST API development, Spring Data JPA integration, layered architecture, asynchronous processing, and thread pool management using ExecutorService.
+⚠️ Developed as part of Week 6 Spring Boot Training.
 
-📌 Project Overview
+A production-style RESTful Bookstore application built using **Spring Boot 3**, **Spring Data JPA**, and **MySQL**.  
+This project demonstrates layered architecture, REST API design, asynchronous processing, and thread pool management using `ExecutorService`.
 
-A production-style RESTful Bookstore application built using Spring Boot.
-It implements CRUD operations, database persistence with JPA & Hibernate, and concurrent order processing using Java thread pools.
+---
 
-This project follows a standard enterprise layered architecture:
+## 📌 Project Overview
+
+This application implements CRUD operations for managing books and supports concurrent order processing.
+
+It follows standard enterprise layered architecture:
 
 Client → Controller → Service → Repository → Database
-🚀 Features
 
-✅ Complete CRUD operations for Books
+---
 
-✅ Search books by keyword (name or author)
+## 🚀 Features
 
-✅ Order management with timestamp tracking
+- ✅ Complete CRUD operations for Books
+- ✅ Search books by keyword (name or author)
+- ✅ Order management with timestamp tracking
+- ✅ Asynchronous email simulation using `@Async`
+- ✅ Thread pool implementation using `ExecutorService`
+- ✅ Spring Data JPA integration
+- ✅ MySQL / H2 database support
+- ✅ Clean layered architecture
+- ✅ RESTful API principles
+- ✅ Transaction management using `@Transactional`
 
-✅ Asynchronous email simulation using @Async
+---
 
-✅ Thread pool implementation using ExecutorService
+## 🛠 Tech Stack
 
-✅ Spring Data JPA integration
+### Backend
+- Java 17
+- Spring Boot 3.x
+- Spring Web
+- Spring Data JPA
+- Hibernate ORM
 
-✅ MySQL / H2 database support
+### Database
+- MySQL (Primary)
+- H2 (Optional for testing)
 
-✅ Clean layered architecture
+### Build Tool
+- Maven
 
-✅ RESTful API design principles
+### Concepts Used
+- Jakarta Persistence API (JPA)
+- ExecutorService (Thread Pool)
+- Asynchronous Processing
+- Dependency Injection
+- Transaction Management
 
-✅ Transaction management using @Transactional
+---
 
-🛠 Tech Stack
-Backend
-
-Java 17
-
-Spring Boot 3.x
-
-Spring Web (REST)
-
-Spring Data JPA
-
-Hibernate ORM
-
-Database
-
-MySQL (Primary)
-
-H2 (Optional for testing)
-
-Build Tool
-
-Maven
-
-Other Concepts
-
-Jakarta Persistence API (JPA)
-
-ExecutorService (Thread Pool)
-
-Asynchronous Processing
-
-Dependency Injection
-
-📂 Project Structure
+## 📂 Project Structure
 BookStoreApplication/
 │
-├── Controller/        → REST endpoints
-├── Service/           → Business logic + Thread handling
-├── Repository/        → Data access layer
-├── Entity/            → JPA entities
+├── controller/ → REST endpoints
+├── service/ → Business logic + Thread handling
+├── repository/ → Data access layer
+├── entity/ → JPA entities
 └── BookStoreApplication.java
-🗄 Database Configuration
 
-Update application.properties:
 
+---
+
+## 🗄 Database Configuration
+
+Update `application.properties`:
+
+```properties
 spring.datasource.url=jdbc:mysql://localhost:3306/bookstore_db
 spring.datasource.username=your_username
 spring.datasource.password=your_password
@@ -87,12 +83,12 @@ spring.jpa.hibernate.ddl-auto=update
 spring.jpa.show-sql=true
 spring.jpa.properties.hibernate.format_sql=true
 
-⚠️ Do not commit real database passwords to version control.
+⚠️ Never commit real database passwords to version control.
 
 ▶️ Running the Application
 Using Maven
 mvn spring-boot:run
-Or Build and Run
+Or Build & Run
 mvn clean package
 java -jar target/BookStoreApplication-0.0.1-SNAPSHOT.jar
 
@@ -100,7 +96,9 @@ Application runs on:
 
 http://localhost:8080
 🌐 REST API Endpoints
-Base URL
+
+Base URL:
+
 http://localhost:8080/books
 Method	Endpoint	Description
 POST	/books	Create book
@@ -110,7 +108,15 @@ PUT	/books/{id}	Update book
 DELETE	/books/{id}	Delete book
 GET	/books/search?keyword=java	Search books
 POST	/books/order?bookName=name	Order book
-📌 Key Concepts Implemented
+🧪 Sample Request (Create Book)
+POST /books
+Content-Type: application/json
+{
+  "name": "Effective Java",
+  "author": "Joshua Bloch",
+  "price": 45.99
+}
+🧠 Key Concepts Implemented
 1️⃣ Layered Architecture
 
 Controller → Handles HTTP requests
@@ -157,15 +163,6 @@ Ensures atomic database operations
 
 Automatic rollback on failure
 
-🧪 Sample Request (Create Book)
-POST /books
-Content-Type: application/json
-
-{
-"name": "Effective Java",
-"author": "Joshua Bloch",
-"price": 45.99
-}
 🔮 Future Improvements
 
 Global exception handling (@ControllerAdvice)
