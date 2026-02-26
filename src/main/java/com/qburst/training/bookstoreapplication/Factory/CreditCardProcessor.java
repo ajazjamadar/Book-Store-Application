@@ -38,7 +38,7 @@ public class CreditCardProcessor implements PaymentProcessor {
         
         String transactionId = "CC-" + UUID.randomUUID().toString().substring(0, 8);
         String maskedCard = maskCardNumber(request.getCardNumber());
-        String message = String.format("Credit card payment of $%.2f processed successfully for '%s'. Card: %s",
+        String message = "Credit card payment of $%.2f processed successfully for '%s'. Card: %s".formatted(
                 request.getAmount(), request.getBookName(), maskedCard);
         
         logger.info("Payment SUCCESS - Transaction: {}", transactionId);

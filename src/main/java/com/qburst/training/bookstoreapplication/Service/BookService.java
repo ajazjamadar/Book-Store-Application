@@ -123,9 +123,9 @@ public class BookService {
     }
     
     public String getApplicationInfo() {
-        return String.format("%s v%s - %s", 
-                           appConfiguration.getName(), 
-                           appConfiguration.getVersion(),
-                           appConfiguration.getDescription());
+        return "%s v%s - %s".formatted(
+                appConfiguration.getName(),
+                appConfiguration.getVersion(),
+                appConfiguration.getDescription());
     }
 }

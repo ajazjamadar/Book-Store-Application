@@ -28,7 +28,7 @@ public class UpiProcessor implements PaymentProcessor {
         }
         
         String transactionId = "UPI-" + UUID.randomUUID().toString().substring(0, 8);
-        String message = String.format("UPI payment of $%.2f processed successfully for '%s'. UPI ID: %s",
+        String message = "UPI payment of $%.2f processed successfully for '%s'. UPI ID: %s".formatted(
                 request.getAmount(), request.getBookName(), maskUpiId(request.getUpiId()));
         
         logger.info("Payment SUCCESS - Transaction: {}", transactionId);
