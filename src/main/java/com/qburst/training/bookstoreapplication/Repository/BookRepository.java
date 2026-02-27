@@ -11,8 +11,11 @@ import com.qburst.training.bookstoreapplication.Entity.Book;
 
 @Repository
 public interface BookRepository extends JpaRepository<Book, Long> {
-    
+
+    // Exact name lookup used for payment processing
+    java.util.Optional<Book> findByNameIgnoreCase(String name);
+
     // Search books by keyword in name or author
-    @Query("SELECT b FROM Book b WHERE LOWER(b.name) LIKE LOWER(CONCAT('%', :keyword, '%')) OR LOWER(b.author) LIKE LOWER(CONCAT('%', :keyword, '%'))")
+    @Query("SELECT b FROM Book b WHERE LOWER(b.name) LIKE LOWER(CONCAT('%', :keyword, '%')) OR LOWER(b.author) LIKE LOWER(CONCAT('%', :keyword, '%'))")    
     List<Book> searchByKeyword(@Param("keyword") String keyword);
 }

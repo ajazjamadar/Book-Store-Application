@@ -18,11 +18,7 @@ import com.qburst.training.bookstoreapplication.enums.PaymentStatus;
 import com.qburst.training.bookstoreapplication.exception.ResourceNotFoundException;
 
 /**
- * Service layer for books, orders, and payment processing.
- * 
- * Design Patterns:
- * - Factory Pattern: PaymentProcessorFactory
- * - Singleton Pattern: AppConfiguration
+ * Service layer for book management, order creation, and payment processing.
  */
 @Service
 public class BookService {
@@ -31,18 +27,15 @@ public class BookService {
     
     private final BookRepository bookRepository;
     private final OrderService orderService;
-    private final EmailService emailService;
     private final PaymentProcessorFactory paymentFactory;
     private final AppConfiguration appConfiguration;
 
     public BookService(BookRepository bookRepository, 
                       OrderService orderService,
-                      EmailService emailService,
                       PaymentProcessorFactory paymentFactory,
                       AppConfiguration appConfiguration) {
         this.bookRepository = bookRepository;
         this.orderService = orderService;
-        this.emailService = emailService;
         this.paymentFactory = paymentFactory;
         this.appConfiguration = appConfiguration;
     }
@@ -80,34 +73,31 @@ public class BookService {
     }
 
     public String orderBook(String bookName) {
-        emailService.sendEmail(bookName);
         return "Order placed for book: " + bookName;
     }
     
-    /**
-     * Processes payment using Factory Pattern to select appropriate processor.
-     * Creates order, processes payment, updates status, and sends confirmation.
-     */
     public PaymentResponse processPaymentWithOrder(PaymentRequest paymentRequest) {
-        Book book = searchBooks(paymentRequest.getBookName()).stream()
-                .findFirst()
+        Book book = bookRepository.findByNameIgnoreCase(paymentRequest.getBookName())
                 .orElseThrow(() -> new ResourceNotFoundException("Book", "name", paymentRequest.getBookName()));
         
         if (paymentRequest.getAmount() == null) {
             paymentRequest.setAmount(book.getPrice());
         }
         
-        Order order = orderService.createOrder(paymentRequest.getBookName());
-        logger.info("Order #{} created (PENDING)", order.getId());
+        Order order = orderService.createOrder(book);
+        logger.info("Order #{} created (PENDING) for book '{}'", order.getId(), book.getName());
         
         try {
             PaymentProcessor processor = paymentFactory.getProcessor(paymentRequest.getPaymentType());
             PaymentResponse result = processor.processPayment(paymentRequest);
-            
+
+            // Stamp order ID and payment method onto response
+            result.setOrderId(order.getId());
+            result.setPaymentMethod(paymentRequest.getPaymentType().toUpperCase());
+
             if (result.isSuccess()) {
                 orderService.updatePaymentStatus(order.getId(), PaymentStatus.SUCCESS);
                 logger.info("Order #{} - SUCCESS", order.getId());
-                emailService.sendEmail(paymentRequest.getBookName());
             } else {
                 orderService.updatePaymentStatus(order.getId(), PaymentStatus.FAILED);
                 logger.warn("Order #{} - FAILED", order.getId());

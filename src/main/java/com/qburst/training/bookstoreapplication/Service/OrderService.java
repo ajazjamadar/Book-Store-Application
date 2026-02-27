@@ -2,6 +2,7 @@ package com.qburst.training.bookstoreapplication.Service;
 
 import org.springframework.stereotype.Service;
 
+import com.qburst.training.bookstoreapplication.Entity.Book;
 import com.qburst.training.bookstoreapplication.Entity.Order;
 import com.qburst.training.bookstoreapplication.Repository.OrderRepository;
 import com.qburst.training.bookstoreapplication.enums.PaymentStatus;
@@ -16,9 +17,8 @@ public class OrderService {
         this.orderRepository = orderRepository;
     }
 
-    public Order createOrder(String bookName) {
-        Order order = new Order(bookName);
-        order.setPaymentStatus(PaymentStatus.PENDING);
+    public Order createOrder(Book book) {
+        Order order = new Order(book);  // status defaults to PENDING in constructor
         return orderRepository.save(order);
     }
 

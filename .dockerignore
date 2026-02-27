@@ -1,0 +1,34 @@
+# ── Build artifacts ────────────────────────────────────────────────────────────
+target/
+
+# ── Version control ────────────────────────────────────────────────────────────
+.git/
+.gitignore
+.gitattributes
+.github/
+
+# ── IDE/local config ───────────────────────────────────────────────────────────
+.idea/
+*.iml
+*.iws
+*.ipr
+.vscode/
+
+# ── Maven wrapper (not needed inside container) ────────────────────────────────
+.mvn/
+mvnw
+mvnw.cmd
+
+# ── Docker files themselves ────────────────────────────────────────────────────
+Dockerfile
+docker-compose.yml
+# Keep frontend/nginx.conf in context (needed by frontend image build)
+frontend/Dockerfile
+
+# ── Docs & markdown ────────────────────────────────────────────────────────────
+*.md
+LICENSE
+
+# ── OS noise ───────────────────────────────────────────────────────────────────
+.DS_Store
+Thumbs.db

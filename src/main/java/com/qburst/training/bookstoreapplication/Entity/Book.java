@@ -7,6 +7,8 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
+import java.math.BigDecimal;
+
 @Entity
 @Table(name = "books")
 public class Book {
@@ -19,12 +21,12 @@ public class Book {
     private String name;
     
     private String author;
-    private Double price;
+    private BigDecimal price;
     
     // Constructors
     public Book() {}
     
-    public Book(String name, String author, Double price) {
+    public Book(String name, String author, BigDecimal price) {
         this.name = name;
         this.author = author;
         this.price = price;
@@ -55,11 +57,11 @@ public class Book {
         this.author = author;
     }
     
-    public Double getPrice() {
+    public BigDecimal getPrice() {
         return price;
     }
     
-    public void setPrice(Double price) {
+    public void setPrice(BigDecimal price) {
         this.price = price;
     }
 }
