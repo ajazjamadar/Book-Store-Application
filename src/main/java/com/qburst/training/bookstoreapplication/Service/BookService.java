@@ -1,12 +1,16 @@
 package com.qburst.training.bookstoreapplication.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.qburst.training.bookstoreapplication.Config.AppConfiguration;
+import com.qburst.training.bookstoreapplication.Dto.BookRequestDto;
+import com.qburst.training.bookstoreapplication.Dto.BookResponseDto;
 import com.qburst.training.bookstoreapplication.Dto.PaymentRequest;
 import com.qburst.training.bookstoreapplication.Dto.PaymentResponse;
 import com.qburst.training.bookstoreapplication.Entity.Book;
@@ -21,6 +25,7 @@ import com.qburst.training.bookstoreapplication.exception.ResourceNotFoundExcept
  * Service layer for book management, order creation, and payment processing.
  */
 @Service
+@Transactional(readOnly = true)
 public class BookService {
     
     private static final Logger logger = LoggerFactory.getLogger(BookService.class);
@@ -42,40 +47,70 @@ public class BookService {
 
 
     
-    public Book createBook(Book book) {
-        return bookRepository.save(book);
+    // ----------------------------------------------------------------
+    // Mapping helpers
+    // ----------------------------------------------------------------
+
+    private BookResponseDto toDto(Book book) {
+        return new BookResponseDto(book.getId(), book.getName(), book.getAuthor(), book.getPrice());
     }
 
-    public List<Book> getAllBooks() {
-        return bookRepository.findAll();
+    private Book toEntity(BookRequestDto dto) {
+        return new Book(dto.getName(), dto.getAuthor(), dto.getPrice());
     }
 
-    public Book getBookById(Long id) {
-        return bookRepository.findById(id)
+    // ----------------------------------------------------------------
+    // CRUD operations
+    // ----------------------------------------------------------------
+
+    @Transactional
+    public BookResponseDto createBook(BookRequestDto dto) {
+        Book saved = bookRepository.save(toEntity(dto));
+        return toDto(saved);
+    }
+
+    public List<BookResponseDto> getAllBooks() {
+        return bookRepository.findAll()
+                .stream()
+                .map(this::toDto)
+                .collect(Collectors.toList());
+    }
+
+    public BookResponseDto getBookById(Long id) {
+        Book book = bookRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Book", "id", id));
+        return toDto(book);
     }
 
-    public Book updateBook(Long id, Book bookDetails) {
-        Book book = getBookById(id);
-        book.setName(bookDetails.getName());
-        book.setAuthor(bookDetails.getAuthor());
-        book.setPrice(bookDetails.getPrice());
-        return bookRepository.save(book);
+    @Transactional
+    public BookResponseDto updateBook(Long id, BookRequestDto dto) {
+        Book book = bookRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Book", "id", id));
+        book.setName(dto.getName());
+        book.setAuthor(dto.getAuthor());
+        book.setPrice(dto.getPrice());
+        return toDto(bookRepository.save(book));
     }
 
+    @Transactional
     public void deleteBook(Long id) {
-        getBookById(id);
+        bookRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Book", "id", id));
         bookRepository.deleteById(id);
     }
 
-    public List<Book> searchBooks(String keyword) {
-        return bookRepository.searchByKeyword(keyword);
+    public List<BookResponseDto> searchBooks(String keyword) {
+        return bookRepository.searchByKeyword(keyword)
+                .stream()
+                .map(this::toDto)
+                .collect(Collectors.toList());
     }
 
     public String orderBook(String bookName) {
         return "Order placed for book: " + bookName;
     }
     
+    @Transactional(rollbackFor = Exception.class)
     public PaymentResponse processPaymentWithOrder(PaymentRequest paymentRequest) {
         Book book = bookRepository.findByNameIgnoreCase(paymentRequest.getBookName())
                 .orElseThrow(() -> new ResourceNotFoundException("Book", "name", paymentRequest.getBookName()));

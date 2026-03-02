@@ -5,7 +5,9 @@ import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -61,6 +63,22 @@ public class GlobalExceptionHandler {
     public ApiResponse<Void> handleIllegalArgument(IllegalArgumentException ex) {
         logger.warn("Bad request: {}", ex.getMessage());
         return new ApiResponse<>(false, ex.getMessage());
+    }
+
+    // handles malformed or unreadable JSON request body
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ApiResponse<Void> handleMessageNotReadable(HttpMessageNotReadableException ex) {
+        logger.warn("Malformed JSON request: {}", ex.getMessage());
+        return new ApiResponse<>(false, "Malformed JSON request body");
+    }
+
+    // handles database constraint violations e.g. duplicate entries
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public ApiResponse<Void> handleDataIntegrityViolation(DataIntegrityViolationException ex) {
+        logger.warn("Data integrity violation: {}", ex.getMessage());
+        return new ApiResponse<>(false, "Data integrity violation. Duplicate or invalid data.");
     }
 
     // catch-all — log the full trace internally, return a safe message to the client

@@ -5,7 +5,6 @@ import org.springframework.context.annotation.Configuration;
 
 /**
  * Singleton Pattern: Spring-managed singleton for application configuration.
- * 
  * Binds properties from application.properties with prefix "app".
  * All services share the same instance.
  */
